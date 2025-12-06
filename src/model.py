@@ -3,13 +3,14 @@ Módulo de modelo de Machine Learning.
 Ejemplo práctico para testing y CI/CD.
 """
 
-import numpy as np
+import os
+from typing import Any, Dict, Union
+
 import joblib
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from typing import Dict, Any, Union
-import os
 
 
 class MLModel:

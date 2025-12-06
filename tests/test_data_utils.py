@@ -3,9 +3,9 @@ Tests para el módulo data_utils.py
 Ejemplos de tests unitarios para el aprendizaje de CI/CD
 """
 
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
 from sklearn.preprocessing import StandardScaler
 
 from src.data_utils import (

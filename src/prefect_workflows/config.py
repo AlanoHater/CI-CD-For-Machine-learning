@@ -4,9 +4,9 @@ Incluye configuración para desarrollo, staging y producción
 """
 
 import os
-from typing import Dict, Any
-from prefect.blocks.system import Secret
+from typing import Any, Dict
 
+from prefect.blocks.system import Secret
 
 # =============================================================================
 # CONFIGURACIONES POR ENTORNO

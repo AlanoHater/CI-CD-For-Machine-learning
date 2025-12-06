@@ -9,21 +9,21 @@ Este módulo demuestra cómo crear un flujo completo de ML usando Prefect para:
 - Logging y monitoreo
 """
 
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from typing import Dict, Any, Tuple
-import joblib
 import os
 from datetime import datetime
+from typing import Any, Dict, Tuple
 
-from prefect import flow, task, get_run_logger
+import joblib
+import numpy as np
+import pandas as pd
+from prefect import flow, get_run_logger, task
 from prefect.artifacts import create_markdown_artifact
-from . import log_ml_metrics
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
+from . import log_ml_metrics
 
 # =============================================================================
 # TASKS INDIVIDUALES (Funciones atómicas reutilizables)

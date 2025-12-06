@@ -3,11 +3,12 @@ Utilidades para procesamiento de datos en Machine Learning.
 Módulo de ejemplo para el aprendizaje de GitHub Actions.
 """
 
+from typing import Any, Dict, Tuple
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from typing import Tuple, Dict, Any
 
 
 def generate_sample_data(

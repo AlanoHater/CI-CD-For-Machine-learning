@@ -3,15 +3,16 @@ Tests para el módulo model.py
 Tests de modelos ML para el aprendizaje de CI/CD
 """
 
-import pytest
-import numpy as np
 import os
 import tempfile
+
+import numpy as np
+import pytest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
-from src.model import MLModel, create_and_train_model
 from src.data_utils import generate_sample_data, preprocess_data
+from src.model import MLModel, create_and_train_model
 
 
 class TestMLModel:
