@@ -1,0 +1,12 @@
+name: Welcome Workflow
+
+on: 
+  push:
+     branches: [ develop ]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Welcome Message
+        run: echo "¡Bienvenido a GitHub Actions! Este workflow se ejecuta cuando hay push a la rama 'develop'."
