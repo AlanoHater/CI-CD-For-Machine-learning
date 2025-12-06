@@ -130,7 +130,7 @@ omit = [
     "*/tests/*",
     "*/test_*.py",
     "setup.py",
-    "src/prefect_workflows/*",  # <--- CORRECCIÓN A APLICAR
+    "src/prefect_workflows/*",  # <--- AGREGAR ESTA LÍNEA
 ]
 
 [tool.coverage.report]
