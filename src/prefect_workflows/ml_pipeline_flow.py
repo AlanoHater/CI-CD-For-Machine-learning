@@ -397,7 +397,7 @@ def save_model(
         _ = joblib.load(scaler_file)
 
         # Quick validation
-        test_pred = loaded_model.predict(np.random.randn(5, model.n_features_in_))
+        _ = loaded_model.predict(np.random.randn(5, model.n_features_in_))
         logger.info("✅ Modelo y scaler guardados y validados correctamente")
     except Exception as e:
         logger.error(f"❌ Error al validar archivos guardados: {e}")
