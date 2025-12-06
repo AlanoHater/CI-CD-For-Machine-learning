@@ -28,7 +28,7 @@ def get_secret(name: str, default: str = None) -> str:
     try:
         secret = Secret.load(name)
         return secret.get()
-    except:
+    except Exception:
         if default:
             return default
         raise ValueError(f"Secret '{name}' no encontrado")

@@ -279,7 +279,7 @@ def evaluate_model(
 
     # Predicciones
     y_pred = model.predict(X_test)
-    _y_proba = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
+    _ = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
 
     # Métricas principales
     accuracy = accuracy_score(y_test, y_pred)
@@ -397,7 +397,7 @@ def save_model(
         _ = joblib.load(scaler_file)
 
         # Quick validation
-        _ = loaded_model.predict(np.random.randn(5, model.n_features_in_))
+        test_pred = loaded_model.predict(np.random.randn(5, model.n_features_in_))
         logger.info("✅ Modelo y scaler guardados y validados correctamente")
     except Exception as e:
         logger.error(f"❌ Error al validar archivos guardados: {e}")
