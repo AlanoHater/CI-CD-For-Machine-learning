@@ -1,0 +1,10 @@
+name: Hello World Workflow
+
+on: [push]  # Se ejecuta en cualquier push
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello World
+        run: echo "¡Hola, GitHub Actions!"
