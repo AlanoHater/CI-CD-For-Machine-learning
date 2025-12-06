@@ -1,0 +1,28 @@
+name: Multi-OS Workflow
+
+on: [push]
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ubuntu Info
+        run: |
+          echo "Sistema: $(uname -a)"
+          echo "Directorio: $(pwd)"
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Windows Info
+        run: |
+          echo "Sistema: $env:OS"
+          echo "Directorio: $pwd"
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: macOS Info
+        run: |
+          echo "Sistema: $(uname -a)"
+          echo "Directorio: $(pwd)"
