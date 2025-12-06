@@ -95,6 +95,21 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
     }, "Data Exploration")
 
     # Crear artifact de Markdown con resumen
+    # Generar distribución de clases si existe
+    class_dist_text = ""
+    if 'class_distribution' in stats and stats['class_distribution']:
+        class_dist_text = '\n'.join(
+            f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" 
+            for k, v in stats['class_distribution'].items()
+        )
+    else:
+        class_dist_text = "- No class distribution available"
+
+    # Calcular porcentajes de calidad de datos
+    total_cells = len(df) * len(df.columns)
+    missing_pct = (sum(stats['missing_values'].values()) / total_cells) * 100 if total_cells > 0 else 0.0
+    duplicates_pct = (stats['duplicates'] / len(df)) * 100 if len(df) > 0 else 0.0
+
     summary_md = f"""
 # 📊 Data Exploration Summary
 
@@ -105,11 +120,11 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
 - **Duplicates**: {stats['duplicates']:,}
 
 ## Class Distribution
-{f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" for k, v in stats.get('class_distribution', {}).items()}
+{class_dist_text}
 
 ## Data Quality
-- **Missing %**: {(sum(stats['missing_values'].values()) / (len(df) * len(df.columns))) * 100:.2f}%
-- **Duplicates %**: {(stats['duplicates'] / len(df)) * 100:.2f}%
+- **Missing %**: {missing_pct:.2f}%
+- **Duplicates %**: {duplicates_pct:.2f}%
 """
 
     create_markdown_artifact(summary_md, "data-exploration-summary")
@@ -263,7 +278,19 @@ def evaluate_model(model: RandomForestClassifier, X_test: np.ndarray,
         'true_values_sample': y_test[:10].tolist()   # Primeros 10 valores reales
     }
 
-    logger.info(".4f"
+    logger.info(f"Accuracy: {accuracy:.4f}")
+    
+    # Formatear top features para el artifact
+    top_features_text = ""
+    if feature_importance:
+        top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_features_text = '\n'.join(
+            f"- **{name}**: {importance:.4f}" 
+            for name, importance in top_features
+        )
+    else:
+        top_features_text = "- No feature importance available"
+    
     # Crear artifact con métricas detalladas
     metrics_md = f"""
 # 📈 Model Evaluation Results
@@ -280,7 +307,7 @@ def evaluate_model(model: RandomForestClassifier, X_test: np.ndarray,
 ```
 
 ## Top 5 Most Important Features
-{sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:5]}
+{top_features_text}
 """
 
     create_markdown_artifact(metrics_md, "model-evaluation-results")
@@ -338,7 +365,7 @@ def save_model(model: RandomForestClassifier, scaler: StandardScaler,
 
         # Quick validation
         test_pred = loaded_model.predict(np.random.randn(5, model.n_features_in_))
-        logger.info("✅ Modelo y scaler guardados y validados correctamente"
+        logger.info("✅ Modelo y scaler guardados y validados correctamente")
     except Exception as e:
         logger.error(f"❌ Error al validar archivos guardados: {e}")
         raise
