@@ -120,7 +120,7 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
 - **Duplicates**: {stats['duplicates']:,}
 
 ## Class Distribution
-{class_dist_text}
+{'\n'.join(f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" for k, v in stats.get('class_distribution', {}).items())}
 
 ## Data Quality
 - **Missing %**: {missing_pct:.2f}%
