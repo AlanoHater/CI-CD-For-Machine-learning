@@ -1,0 +1,22 @@
+name: Context Explorer Workflow
+
+on:
+  # El workflow solo se dispara para PRs dirigidos a la rama 'develop'
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  explore:
+    runs-on: ubuntu-latest
+    steps:
+      # Se recomienda siempre usar checkout en workflows
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Show Context Info
+        run: |
+          echo "Usuario: ${{ github.actor }}"
+          echo "Repositorio: ${{ github.repository }}"
+          echo "Branch (Target/Base): ${{ github.base_ref }}" # La rama a la que se hace el merge (develop)
+          echo "Branch (Source/Head): ${{ github.head_ref }}" # La rama de donde viene el PR (feature/...)
+          echo "Evento: ${{ github.event_name }}"
