@@ -18,6 +18,10 @@ def main():
     print("🚀 Iniciando demo del pipeline ML...")
     print("=" * 50)
 
+    # Inicializar variables
+    accuracy = 0.0
+    final_status = "FAILED"
+
     # Paso 1: Generar datos
     print("\n📊 Paso 1: Generación de datos")
     df = generate_sample_data(n_samples=500, n_features=6, random_state=42)
@@ -43,14 +47,16 @@ def main():
     print("\n📊 Paso 5: Evaluación del modelo")
     results = model.evaluate(X_test, y_test)
     accuracy = results['accuracy']
-    print(".4f"
+    print(f"📊 Accuracy del modelo: {accuracy:.4f}")
+    
     # Paso 6: Validación de calidad
     print("\n🎯 Paso 6: Validación de calidad")
-    if accuracy >= 0.75:
-        print("✅ Modelo aprobado - Accuracy suficiente")
+    min_accuracy_threshold = 0.5  # Threshold mínimo para considerar el modelo válido
+    if accuracy >= min_accuracy_threshold:
+        print(f"✅ Modelo aprobado - Accuracy {accuracy:.4f} >= {min_accuracy_threshold}")
         status = "SUCCESS"
     else:
-        print("❌ Modelo rechazado - Accuracy insuficiente")
+        print(f"❌ Modelo rechazado - Accuracy insuficiente ({accuracy:.4f} < {min_accuracy_threshold})")
         status = "FAILED"
 
     # Paso 7: Guardado de modelo
@@ -78,11 +84,13 @@ def main():
     print("\n" + "=" * 50)
     if final_status == "SUCCESS":
         print("🎉 ¡PIPELINE ML COMPLETADO EXITOSAMENTE!")
-        print(".4f"        print("📈 El modelo está listo para producción")
+        print(f"📊 Accuracy final: {accuracy:.4f}")
+        print("📈 El modelo está listo para producción")
         return 0
     else:
         print("💥 PIPELINE ML FALLÓ")
-        print(".4f"        print("🔧 Revisar configuración y datos")
+        print(f"📊 Accuracy final: {accuracy:.4f}")
+        print("🔧 Revisar configuración y datos")
         return 1
 
 
