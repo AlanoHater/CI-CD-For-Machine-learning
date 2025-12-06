@@ -1,6 +1,8 @@
 name: Hello World Workflow
 
-on: [push]  # Se ejecuta en cualquier push
+on:
+  push:
+    branches: [ develop ] # Solo se ejecuta cuando hay push a la rama 'develop'
 
 jobs:
   hello:
