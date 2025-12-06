@@ -82,7 +82,7 @@ known_first_party = ["src"]
 skip = ["__init__.py"]
 
 [tool.flake8]
-max-line-length = 88
+max-line-length = 120
 extend-ignore = ["E203", "W503"]
 exclude = [
     ".git",
