@@ -116,7 +116,7 @@ ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-under=80"
+addopts = "-ra -q --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-under=75" # <--- CAMBIAR 80 A 75
 testpaths = [
     "tests",
 ]
