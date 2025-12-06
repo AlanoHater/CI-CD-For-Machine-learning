@@ -87,7 +87,7 @@ extend-ignore = ["E203", "W503"]
 exclude = [
     ".git",
     "__pycache__",
-    "build",
+    "build",    
     "dist",
     ".venv",
     ".tox",
