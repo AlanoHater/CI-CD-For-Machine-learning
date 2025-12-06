@@ -105,7 +105,7 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
 - **Duplicates**: {stats['duplicates']:,}
 
 ## Class Distribution
-{f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" for k, v in stats.get('class_distribution', {}).items()}
+{'\n'.join(f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" for k, v in stats.get('class_distribution', {}).items())}
 
 ## Data Quality
 - **Missing %**: {(sum(stats['missing_values'].values()) / (len(df) * len(df.columns))) * 100:.2f}%
