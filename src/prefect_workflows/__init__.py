@@ -7,6 +7,7 @@ import os
 
 __version__ = "0.1.0"
 
+
 # Configuración global de Prefect
 def setup_prefect():
     """Configura el entorno de Prefect para desarrollo."""
@@ -15,10 +16,12 @@ def setup_prefect():
 
     # Configurar logging
     import logging
+
     logging.basicConfig(level=logging.INFO)
 
     print("🚀 Prefect configurado para desarrollo local")
     print("💡 Ejecuta 'prefect server start' para iniciar el servidor UI")
+
 
 # Funciones helper para workflows
 def get_secret(name: str, default: str = None) -> str:
@@ -30,6 +33,7 @@ def get_secret(name: str, default: str = None) -> str:
         if default:
             return default
         raise ValueError(f"Secret '{name}' no encontrado")
+
 
 def log_ml_metrics(metrics: dict, step_name: str = "ML Step"):
     """Registra métricas de ML en los logs de Prefect."""

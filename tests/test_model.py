@@ -26,7 +26,7 @@ class TestMLModel:
 
     def test_init_random_forest(self):
         """Test inicialización de modelo Random Forest."""
-        model = MLModel(model_type='random_forest', n_estimators=50)
+        model = MLModel(model_type="random_forest", n_estimators=50)
 
         assert isinstance(model.model, RandomForestClassifier)
         assert model.model.n_estimators == 50
@@ -34,7 +34,7 @@ class TestMLModel:
 
     def test_init_logistic_regression(self):
         """Test inicialización de modelo Logistic Regression."""
-        model = MLModel(model_type='logistic_regression', max_iter=500)
+        model = MLModel(model_type="logistic_regression", max_iter=500)
 
         assert isinstance(model.model, LogisticRegression)
         assert model.model.max_iter == 500
@@ -43,11 +43,11 @@ class TestMLModel:
     def test_init_invalid_model_type(self):
         """Test que modelo inválido lance error."""
         with pytest.raises(ValueError, match="Modelo .* no soportado"):
-            MLModel(model_type='invalid_model')
+            MLModel(model_type="invalid_model")
 
     def test_train_model(self):
         """Test entrenamiento básico del modelo."""
-        model = MLModel(model_type='random_forest')
+        model = MLModel(model_type="random_forest")
 
         model.train(self.X_train, self.y_train)
 
@@ -85,30 +85,36 @@ class TestMLModel:
         results = model.evaluate(self.X_test, self.y_test)
 
         # Verificar estructura del resultado
-        required_keys = ['accuracy', 'confusion_matrix', 'classification_report', 'predictions', 'true_values']
+        required_keys = [
+            "accuracy",
+            "confusion_matrix",
+            "classification_report",
+            "predictions",
+            "true_values",
+        ]
         for key in required_keys:
             assert key in results
 
         # Verificar valores
-        assert isinstance(results['accuracy'], float)
-        assert 0 <= results['accuracy'] <= 1
-        assert isinstance(results['confusion_matrix'], list)
-        assert len(results['predictions']) == 10  # Primeras 10 predicciones
-        assert len(results['true_values']) == 10   # Primeros 10 valores reales
+        assert isinstance(results["accuracy"], float)
+        assert 0 <= results["accuracy"] <= 1
+        assert isinstance(results["confusion_matrix"], list)
+        assert len(results["predictions"]) == 10  # Primeras 10 predicciones
+        assert len(results["true_values"]) == 10  # Primeros 10 valores reales
 
     def test_save_model_without_training(self):
         """Test que save lance error si modelo no está entrenado."""
         model = MLModel()
 
         with pytest.raises(ValueError, match="no ha sido entrenado"):
-            model.save_model('test_model.pkl')
+            model.save_model("test_model.pkl")
 
     def test_save_and_load_model(self):
         """Test guardar y cargar modelo."""
         model = MLModel()
         model.train(self.X_train, self.y_train)
 
-        with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as tmp:
             model.save_model(tmp.name)
 
             # Verificar que archivo existe
@@ -133,7 +139,7 @@ class TestMLModel:
         model = MLModel()
 
         with pytest.raises(FileNotFoundError):
-            model.load_model('nonexistent_model.pkl')
+            model.load_model("nonexistent_model.pkl")
 
     def test_validate_model_loading(self):
         """Test validación de carga de modelo."""
@@ -163,11 +169,11 @@ class TestHelperFunctions:
         X_train = np.random.randn(50, 4)
         y_train = np.random.randint(0, 2, 50)
 
-        model = create_and_train_model(X_train, y_train, model_type='random_forest')
+        model = create_and_train_model(X_train, y_train, model_type="random_forest")
 
         assert isinstance(model, MLModel)
         assert model.is_trained
-        assert model.model_type == 'random_forest'
+        assert model.model_type == "random_forest"
 
 
 class TestModelIntegration:
@@ -186,10 +192,10 @@ class TestModelIntegration:
         results = model.evaluate(X_test, y_test)
 
         # Verificar que accuracy sea razonable (> 0.5)
-        assert results['accuracy'] > 0.5
+        assert results["accuracy"] > 0.5
 
         # Guardar y recargar
-        with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as tmp:
             model.save_model(tmp.name)
 
             new_model = MLModel()
@@ -207,20 +213,22 @@ class TestModelIntegration:
         X_train, X_test, y_train, y_test, _ = preprocess_data(df)
 
         # Entrenar Random Forest
-        rf_model = create_and_train_model(X_train, y_train, model_type='random_forest')
+        rf_model = create_and_train_model(X_train, y_train, model_type="random_forest")
         rf_results = rf_model.evaluate(X_test, y_test)
 
         # Entrenar Logistic Regression
-        lr_model = create_and_train_model(X_train, y_train, model_type='logistic_regression')
+        lr_model = create_and_train_model(
+            X_train, y_train, model_type="logistic_regression"
+        )
         lr_results = lr_model.evaluate(X_test, y_test)
 
         # Ambos deberían tener accuracy > 0.4 (umbral bajo para test)
-        assert rf_results['accuracy'] > 0.4
-        assert lr_results['accuracy'] > 0.4
+        assert rf_results["accuracy"] > 0.4
+        assert lr_results["accuracy"] > 0.4
 
         # Verificar que las métricas sean números
-        assert isinstance(rf_results['accuracy'], (int, float))
-        assert isinstance(lr_results['accuracy'], (int, float))
+        assert isinstance(rf_results["accuracy"], (int, float))
+        assert isinstance(lr_results["accuracy"], (int, float))
 
 
 # Benchmarks de performance
@@ -234,7 +242,7 @@ class TestModelPerformance:
         X_train = np.random.randn(100, 4)
         y_train = np.random.randint(0, 2, 100)
 
-        model = MLModel(model_type='random_forest', n_estimators=10)  # Modelo pequeño
+        model = MLModel(model_type="random_forest", n_estimators=10)  # Modelo pequeño
 
         start_time = time.time()
         model.train(X_train, y_train)

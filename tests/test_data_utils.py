@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from src.data_utils import (
     generate_sample_data,
     preprocess_data,
-    validate_data_integrity
+    validate_data_integrity,
 )
 
 
@@ -24,7 +24,7 @@ class TestGenerateSampleData:
 
         assert isinstance(df, pd.DataFrame)
         assert len(df) == 100
-        assert 'target' in df.columns
+        assert "target" in df.columns
         assert len(df.columns) == 5  # 4 features + 1 target
 
     def test_generate_sample_data_reproducibility(self):
@@ -38,8 +38,10 @@ class TestGenerateSampleData:
         """Test que target tenga valores binarios."""
         df = generate_sample_data(n_samples=100)
 
-        assert df['target'].isin([0, 1]).all()
-        assert len(df['target'].unique()) <= 2  # Puede tener solo una clase en datasets pequeños
+        assert df["target"].isin([0, 1]).all()
+        assert (
+            len(df["target"].unique()) <= 2
+        )  # Puede tener solo una clase en datasets pequeños
 
 
 class TestPreprocessData:
@@ -53,7 +55,7 @@ class TestPreprocessData:
 
         # Verificar formas
         assert X_train.shape[0] == y_train.shape[0]  # Mismas filas
-        assert X_test.shape[0] == y_test.shape[0]    # Mismas filas
+        assert X_test.shape[0] == y_test.shape[0]  # Mismas filas
         assert X_train.shape[1] == X_test.shape[1] == 4  # Mismas columnas
         assert isinstance(scaler, StandardScaler)
 
@@ -92,16 +94,23 @@ class TestValidateDataIntegrity:
         result = validate_data_integrity(df)
 
         # Verificar estructura del resultado
-        required_keys = ['n_rows', 'n_cols', 'missing_values', 'duplicate_rows', 'data_types', 'infinite_values']
+        required_keys = [
+            "n_rows",
+            "n_cols",
+            "missing_values",
+            "duplicate_rows",
+            "data_types",
+            "infinite_values",
+        ]
         for key in required_keys:
             assert key in result
 
         # Verificar valores
-        assert result['n_rows'] == 50
-        assert result['n_cols'] == 4  # 3 features + 1 target
-        assert result['missing_values'] == 0
-        assert result['duplicate_rows'] == 0
-        assert result['infinite_values'] == 0
+        assert result["n_rows"] == 50
+        assert result["n_cols"] == 4  # 3 features + 1 target
+        assert result["missing_values"] == 0
+        assert result["duplicate_rows"] == 0
+        assert result["infinite_values"] == 0
 
     def test_validate_data_integrity_with_target(self):
         """Test validación incluye información de clases cuando hay target."""
@@ -109,19 +118,19 @@ class TestValidateDataIntegrity:
 
         result = validate_data_integrity(df)
 
-        assert 'class_balance' in result
-        assert 'min_class_ratio' in result
-        assert isinstance(result['class_balance'], dict)
-        assert 0 < result['min_class_ratio'] <= 1
+        assert "class_balance" in result
+        assert "min_class_ratio" in result
+        assert isinstance(result["class_balance"], dict)
+        assert 0 < result["min_class_ratio"] <= 1
 
     def test_validate_data_integrity_missing_values(self):
         """Test detección de valores faltantes."""
         df = generate_sample_data(n_samples=50)
-        df.loc[0, 'feature_0'] = np.nan  # Agregar valor faltante
+        df.loc[0, "feature_0"] = np.nan  # Agregar valor faltante
 
         result = validate_data_integrity(df)
 
-        assert result['missing_values'] == 1
+        assert result["missing_values"] == 1
 
     def test_validate_data_integrity_duplicates(self):
         """Test detección de filas duplicadas."""
@@ -132,7 +141,7 @@ class TestValidateDataIntegrity:
 
         result = validate_data_integrity(df)
 
-        assert result['duplicate_rows'] >= 1  # Al menos una fila duplicada
+        assert result["duplicate_rows"] >= 1  # Al menos una fila duplicada
 
 
 # Tests de integración
@@ -146,8 +155,8 @@ class TestDataUtilsIntegration:
 
         # Validar integridad
         validation = validate_data_integrity(df)
-        assert validation['missing_values'] == 0
-        assert validation['n_rows'] == 200
+        assert validation["missing_values"] == 0
+        assert validation["n_rows"] == 200
 
         # Preprocesar
         X_train, X_test, y_train, y_test, scaler = preprocess_data(df)

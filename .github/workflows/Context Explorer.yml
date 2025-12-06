@@ -20,3 +20,17 @@ jobs:
           echo "Branch (Target/Base): ${{ github.base_ref }}" # La rama a la que se hace el merge (develop)
           echo "Branch (Source/Head): ${{ github.head_ref }}" # La rama de donde viene el PR (feature/...)
           echo "Evento: ${{ github.event_name }}"
+
+
+# ⬇️ INFORMACIÓN SOBRE ACTIONS/CHECKOUT ⬇️
+      # 
+      # Paso fundamental: Descarga (clona) el código del repositorio en el Runner.
+      # Se requiere para que los pasos subsiguientes (como 'run') puedan acceder 
+      # a archivos locales (scripts, tests, requirements.txt).
+      # 
+      #- name: Checkout Code (Obtener repositorio)
+      #  uses: actions/checkout@v4 
+      # 
+      # ⬆️ FIN INFORMACIÓN SOBRE ACTIONS/CHECKOUT ⬆️
+      
+      #- name: Show Context Info

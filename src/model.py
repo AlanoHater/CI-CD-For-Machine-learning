@@ -15,7 +15,7 @@ import os
 class MLModel:
     """Clase wrapper para modelos de ML con funcionalidades de evaluación."""
 
-    def __init__(self, model_type: str = 'random_forest', **kwargs):
+    def __init__(self, model_type: str = "random_forest", **kwargs):
         """
         Inicializa el modelo.
 
@@ -26,12 +26,12 @@ class MLModel:
         self.model_type = model_type
         self.model_params = kwargs
 
-        if model_type == 'random_forest':
-            default_params = {'n_estimators': 100, 'random_state': 42}
+        if model_type == "random_forest":
+            default_params = {"n_estimators": 100, "random_state": 42}
             default_params.update(kwargs)
             self.model = RandomForestClassifier(**default_params)
-        elif model_type == 'logistic_regression':
-            default_params = {'random_state': 42, 'max_iter': 1000}
+        elif model_type == "logistic_regression":
+            default_params = {"random_state": 42, "max_iter": 1000}
             default_params.update(kwargs)
             self.model = LogisticRegression(**default_params)
         else:
@@ -89,11 +89,11 @@ class MLModel:
         class_report = classification_report(y_test, y_pred, output_dict=True)
 
         results = {
-            'accuracy': accuracy,
-            'confusion_matrix': conf_matrix.tolist(),
-            'classification_report': class_report,
-            'predictions': y_pred.tolist()[:10],  # Primeras 10 predicciones
-            'true_values': y_test.tolist()[:10]   # Primeros 10 valores reales
+            "accuracy": accuracy,
+            "confusion_matrix": conf_matrix.tolist(),
+            "classification_report": class_report,
+            "predictions": y_pred.tolist()[:10],  # Primeras 10 predicciones
+            "true_values": y_test.tolist()[:10],  # Primeros 10 valores reales
         }
 
         print(f"📊 Accuracy del modelo: {accuracy:.4f}")
@@ -147,8 +147,9 @@ class MLModel:
             return False
 
 
-def create_and_train_model(X_train: np.ndarray, y_train: np.ndarray,
-                          model_type: str = 'random_forest') -> MLModel:
+def create_and_train_model(
+    X_train: np.ndarray, y_train: np.ndarray, model_type: str = "random_forest"
+) -> MLModel:
     """
     Función helper para crear y entrenar un modelo.
 
@@ -176,17 +177,17 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test, _ = preprocess_data(df)
 
     # Crear y entrenar modelo
-    model = create_and_train_model(X_train, y_train, model_type='random_forest')
+    model = create_and_train_model(X_train, y_train, model_type="random_forest")
 
     # Evaluar modelo
     results = model.evaluate(X_test, y_test)
     print(f"🎯 Accuracy final: {results['accuracy']:.4f}")
 
     # Guardar modelo
-    model.save_model('models/demo_model.pkl')
+    model.save_model("models/demo_model.pkl")
 
     # Validar carga
     new_model = MLModel()
-    new_model.load_model('models/demo_model.pkl')
+    new_model.load_model("models/demo_model.pkl")
     is_valid = new_model.validate_model_loading()
     print(f"✅ Modelo válido después de carga: {is_valid}")

@@ -29,6 +29,7 @@ from . import log_ml_metrics
 # TASKS INDIVIDUALES (Funciones atómicas reutilizables)
 # =============================================================================
 
+
 @task(name="Load Data", description="Carga datos desde archivo CSV")
 def load_data(file_path: str) -> pd.DataFrame:
     """
@@ -49,11 +50,14 @@ def load_data(file_path: str) -> pd.DataFrame:
     df = pd.read_csv(file_path)
 
     logger.info(f"✅ Datos cargados: {len(df)} filas, {len(df.columns)} columnas")
-    log_ml_metrics({
-        "rows": len(df),
-        "columns": len(df.columns),
-        "memory_usage": f"{df.memory_usage(deep=True).sum() / 1024:.2f} KB"
-    }, "Data Loading")
+    log_ml_metrics(
+        {
+            "rows": len(df),
+            "columns": len(df.columns),
+            "memory_usage": f"{df.memory_usage(deep=True).sum() / 1024:.2f} KB",
+        },
+        "Data Loading",
+    )
 
     return df
 
@@ -78,37 +82,49 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
         "dtypes": df.dtypes.to_dict(),
         "missing_values": df.isnull().sum().to_dict(),
         "duplicates": df.duplicated().sum(),
-        "numeric_summary": df.describe().to_dict() if len(df.select_dtypes(include=[np.number]).columns) > 0 else {}
+        "numeric_summary": (
+            df.describe().to_dict()
+            if len(df.select_dtypes(include=[np.number]).columns) > 0
+            else {}
+        ),
     }
 
     # Información de clases (si hay columna target)
-    if 'target' in df.columns:
-        class_counts = df['target'].value_counts()
-        stats['class_distribution'] = class_counts.to_dict()
-        stats['class_balance_ratio'] = class_counts.min() / class_counts.max()
+    if "target" in df.columns:
+        class_counts = df["target"].value_counts()
+        stats["class_distribution"] = class_counts.to_dict()
+        stats["class_balance_ratio"] = class_counts.min() / class_counts.max()
 
-    log_ml_metrics({
-        "total_samples": len(df),
-        "features": len(df.columns) - ('target' in df.columns),
-        "missing_pct": (df.isnull().sum().sum() / (len(df) * len(df.columns))) * 100,
-        "duplicates_pct": (stats['duplicates'] / len(df)) * 100
-    }, "Data Exploration")
+    log_ml_metrics(
+        {
+            "total_samples": len(df),
+            "features": len(df.columns) - ("target" in df.columns),
+            "missing_pct": (df.isnull().sum().sum() / (len(df) * len(df.columns)))
+            * 100,
+            "duplicates_pct": (stats["duplicates"] / len(df)) * 100,
+        },
+        "Data Exploration",
+    )
 
     # Crear artifact de Markdown con resumen
     # Generar distribución de clases si existe
     class_dist_text = ""
-    if 'class_distribution' in stats and stats['class_distribution']:
-        class_dist_text = '\n'.join(
-            f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" 
-            for k, v in stats['class_distribution'].items()
+    if "class_distribution" in stats and stats["class_distribution"]:
+        class_dist_text = "\n".join(
+            f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)"
+            for k, v in stats["class_distribution"].items()
         )
     else:
         class_dist_text = "- No class distribution available"
 
     # Calcular porcentajes de calidad de datos
     total_cells = len(df) * len(df.columns)
-    missing_pct = (sum(stats['missing_values'].values()) / total_cells) * 100 if total_cells > 0 else 0.0
-    duplicates_pct = (stats['duplicates'] / len(df)) * 100 if len(df) > 0 else 0.0
+    missing_pct = (
+        (sum(stats["missing_values"].values()) / total_cells) * 100
+        if total_cells > 0
+        else 0.0
+    )
+    duplicates_pct = (stats["duplicates"] / len(df)) * 100 if len(df) > 0 else 0.0
 
     summary_md = f"""
 # 📊 Data Exploration Summary
@@ -119,8 +135,7 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
 - **Missing Values**: {sum(stats['missing_values'].values()):,}
 - **Duplicates**: {stats['duplicates']:,}
 
-## Class Distribution
-{'\n'.join(f"- **Class {k}**: {v:,} samples ({v/stats['shape'][0]*100:.1f}%)" for k, v in stats.get('class_distribution', {}).items())}
+## Class Distribution {class_dist_text}
 
 ## Data Quality
 - **Missing %**: {missing_pct:.2f}%
@@ -134,7 +149,9 @@ def explore_data(df: pd.DataFrame) -> Dict[str, Any]:
 
 
 @task(name="Preprocess Data", description="Preprocesamiento y limpieza de datos")
-def preprocess_data(df: pd.DataFrame, target_col: str = "target") -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, StandardScaler]:
+def preprocess_data(
+    df: pd.DataFrame, target_col: str = "target"
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, StandardScaler]:
     """
     Preprocesa los datos para ML.
 
@@ -176,25 +193,29 @@ def preprocess_data(df: pd.DataFrame, target_col: str = "target") -> Tuple[np.nd
         X_test_scaled = X_test
         logger.warning("⚠️ No se encontraron columnas numéricas para escalar")
 
-    log_ml_metrics({
-        "train_samples": len(X_train),
-        "test_samples": len(X_test),
-        "scaled_features": len(numeric_cols),
-        "total_features": X_train.shape[1]
-    }, "Data Preprocessing")
+    log_ml_metrics(
+        {
+            "train_samples": len(X_train),
+            "test_samples": len(X_test),
+            "scaled_features": len(numeric_cols),
+            "total_features": X_train.shape[1],
+        },
+        "Data Preprocessing",
+    )
 
     return (
         X_train_scaled.values,
         X_test_scaled.values,
         y_train.values,
         y_test.values,
-        scaler
+        scaler,
     )
 
 
 @task(name="Train Model", description="Entrenamiento del modelo de ML")
-def train_model(X_train: np.ndarray, y_train: np.ndarray,
-                model_params: Dict[str, Any] = None) -> RandomForestClassifier:
+def train_model(
+    X_train: np.ndarray, y_train: np.ndarray, model_params: Dict[str, Any] = None
+) -> RandomForestClassifier:
     """
     Entrena un modelo de Random Forest.
 
@@ -210,10 +231,10 @@ def train_model(X_train: np.ndarray, y_train: np.ndarray,
 
     # Parámetros por defecto
     default_params = {
-        'n_estimators': 100,
-        'random_state': 42,
-        'max_depth': None,
-        'min_samples_split': 2
+        "n_estimators": 100,
+        "random_state": 42,
+        "max_depth": None,
+        "min_samples_split": 2,
     }
 
     if model_params:
@@ -225,19 +246,23 @@ def train_model(X_train: np.ndarray, y_train: np.ndarray,
     model.fit(X_train, y_train)
 
     logger.info("✅ Modelo entrenado exitosamente")
-    log_ml_metrics({
-        "n_estimators": model.n_estimators,
-        "max_depth": model.max_depth,
-        "n_features": model.n_features_in_,
-        "training_score": model.score(X_train, y_train)
-    }, "Model Training")
+    log_ml_metrics(
+        {
+            "n_estimators": model.n_estimators,
+            "max_depth": model.max_depth,
+            "n_features": model.n_features_in_,
+            "training_score": model.score(X_train, y_train),
+        },
+        "Model Training",
+    )
 
     return model
 
 
 @task(name="Evaluate Model", description="Evaluación completa del modelo")
-def evaluate_model(model: RandomForestClassifier, X_test: np.ndarray,
-                  y_test: np.ndarray) -> Dict[str, Any]:
+def evaluate_model(
+    model: RandomForestClassifier, X_test: np.ndarray, y_test: np.ndarray
+) -> Dict[str, Any]:
     """
     Evalúa el modelo en datos de test.
 
@@ -254,7 +279,7 @@ def evaluate_model(model: RandomForestClassifier, X_test: np.ndarray,
 
     # Predicciones
     y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test) if hasattr(model, 'predict_proba') else None
+    y_proba = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
 
     # Métricas principales
     accuracy = accuracy_score(y_test, y_pred)
@@ -265,32 +290,33 @@ def evaluate_model(model: RandomForestClassifier, X_test: np.ndarray,
 
     # Feature importance (para Random Forest)
     feature_importance = {}
-    if hasattr(model, 'feature_importances_'):
+    if hasattr(model, "feature_importances_"):
         for i, importance in enumerate(model.feature_importances_):
-            feature_importance[f'feature_{i}'] = importance
+            feature_importance[f"feature_{i}"] = importance
 
     results = {
-        'accuracy': accuracy,
-        'confusion_matrix': conf_matrix.tolist(),
-        'classification_report': class_report,
-        'feature_importance': feature_importance,
-        'predictions_sample': y_pred[:10].tolist(),  # Primeras 10 predicciones
-        'true_values_sample': y_test[:10].tolist()   # Primeros 10 valores reales
+        "accuracy": accuracy,
+        "confusion_matrix": conf_matrix.tolist(),
+        "classification_report": class_report,
+        "feature_importance": feature_importance,
+        "predictions_sample": y_pred[:10].tolist(),  # Primeras 10 predicciones
+        "true_values_sample": y_test[:10].tolist(),  # Primeros 10 valores reales
     }
 
     logger.info(f"Accuracy: {accuracy:.4f}")
-    
+
     # Formatear top features para el artifact
     top_features_text = ""
     if feature_importance:
-        top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:5]
-        top_features_text = '\n'.join(
-            f"- **{name}**: {importance:.4f}" 
-            for name, importance in top_features
+        top_features = sorted(
+            feature_importance.items(), key=lambda x: x[1], reverse=True
+        )[:5]
+        top_features_text = "\n".join(
+            f"- **{name}**: {importance:.4f}" for name, importance in top_features
         )
     else:
         top_features_text = "- No feature importance available"
-    
+
     # Crear artifact con métricas detalladas
     metrics_md = f"""
 # 📈 Model Evaluation Results
@@ -312,19 +338,26 @@ def evaluate_model(model: RandomForestClassifier, X_test: np.ndarray,
 
     create_markdown_artifact(metrics_md, "model-evaluation-results")
 
-    log_ml_metrics({
-        "accuracy": accuracy,
-        "precision": class_report['weighted avg']['precision'],
-        "recall": class_report['weighted avg']['recall'],
-        "f1_score": class_report['weighted avg']['f1-score']
-    }, "Model Evaluation")
+    log_ml_metrics(
+        {
+            "accuracy": accuracy,
+            "precision": class_report["weighted avg"]["precision"],
+            "recall": class_report["weighted avg"]["recall"],
+            "f1_score": class_report["weighted avg"]["f1-score"],
+        },
+        "Model Evaluation",
+    )
 
     return results
 
 
 @task(name="Save Model", description="Guarda el modelo y scaler entrenados")
-def save_model(model: RandomForestClassifier, scaler: StandardScaler,
-               model_path: str = "models", model_name: str = None) -> str:
+def save_model(
+    model: RandomForestClassifier,
+    scaler: StandardScaler,
+    model_path: str = "models",
+    model_name: str = None,
+) -> str:
     """
     Guarda el modelo y scaler en archivos.
 
@@ -377,9 +410,13 @@ def save_model(model: RandomForestClassifier, scaler: StandardScaler,
 # FLOWS PRINCIPALES (Orquestación de tareas)
 # =============================================================================
 
-@flow(name="ML Training Pipeline", description="Pipeline completo de entrenamiento de ML")
-def ml_training_pipeline(data_path: str, model_name: str = None,
-                        model_params: Dict[str, Any] = None) -> Dict[str, Any]:
+
+@flow(
+    name="ML Training Pipeline", description="Pipeline completo de entrenamiento de ML"
+)
+def ml_training_pipeline(
+    data_path: str, model_name: str = None, model_params: Dict[str, Any] = None
+) -> Dict[str, Any]:
     """
     Flow principal para entrenamiento completo de ML.
 
@@ -414,29 +451,33 @@ def ml_training_pipeline(data_path: str, model_name: str = None,
 
     # Resultado final
     pipeline_results = {
-        'model_path': model_path,
-        'evaluation': evaluation_results,
-        'exploration': exploration_results,
-        'training_info': {
-            'samples': len(df),
-            'features': X_train.shape[1],
-            'test_split': len(X_test) / (len(X_train) + len(X_test))
-        }
+        "model_path": model_path,
+        "evaluation": evaluation_results,
+        "exploration": exploration_results,
+        "training_info": {
+            "samples": len(df),
+            "features": X_train.shape[1],
+            "test_split": len(X_test) / (len(X_train) + len(X_test)),
+        },
     }
 
     logger.info("🎉 Pipeline de entrenamiento completado exitosamente!")
-    log_ml_metrics({
-        "final_accuracy": evaluation_results['accuracy'],
-        "model_saved": model_path,
-        "total_samples": len(df)
-    }, "Pipeline Completion")
+    log_ml_metrics(
+        {
+            "final_accuracy": evaluation_results["accuracy"],
+            "model_saved": model_path,
+            "total_samples": len(df),
+        },
+        "Pipeline Completion",
+    )
 
     return pipeline_results
 
 
 @flow(name="ML Batch Prediction", description="Pipeline para predicciones por lotes")
-def batch_prediction_pipeline(model_path: str, data_path: str,
-                            output_path: str = "predictions") -> str:
+def batch_prediction_pipeline(
+    model_path: str, data_path: str, output_path: str = "predictions"
+) -> str:
     """
     Flow para realizar predicciones por lotes.
 
@@ -453,15 +494,15 @@ def batch_prediction_pipeline(model_path: str, data_path: str,
 
     # Cargar modelo y scaler
     model = joblib.load(model_path)
-    scaler_path = model_path.replace('.pkl', '_scaler.pkl')
+    scaler_path = model_path.replace(".pkl", "_scaler.pkl")
     scaler = joblib.load(scaler_path)
 
     # Cargar datos
     df = load_data(data_path)
 
     # Preprocesar (sin target si no existe)
-    if 'target' in df.columns:
-        X = df.drop(columns=['target'])
+    if "target" in df.columns:
+        X = df.drop(columns=["target"])
     else:
         X = df
 
@@ -475,15 +516,19 @@ def batch_prediction_pipeline(model_path: str, data_path: str,
 
     # Predecir
     predictions = model.predict(X_scaled.values)
-    probabilities = model.predict_proba(X_scaled.values) if hasattr(model, 'predict_proba') else None
+    probabilities = (
+        model.predict_proba(X_scaled.values)
+        if hasattr(model, "predict_proba")
+        else None
+    )
 
     # Crear DataFrame de resultados
     results_df = df.copy()
-    results_df['prediction'] = predictions
+    results_df["prediction"] = predictions
 
     if probabilities is not None:
         for i, class_prob in enumerate(probabilities.T):
-            results_df[f'probability_class_{i}'] = class_prob
+            results_df[f"probability_class_{i}"] = class_prob
 
     # Guardar resultados
     os.makedirs(output_path, exist_ok=True)
@@ -494,11 +539,14 @@ def batch_prediction_pipeline(model_path: str, data_path: str,
     logger.info(f"💾 Predicciones guardadas: {output_file}")
     logger.info(f"📊 Total predicciones: {len(predictions)}")
 
-    log_ml_metrics({
-        "predictions_count": len(predictions),
-        "output_file": output_file,
-        "has_probabilities": probabilities is not None
-    }, "Batch Prediction")
+    log_ml_metrics(
+        {
+            "predictions_count": len(predictions),
+            "output_file": output_file,
+            "has_probabilities": probabilities is not None,
+        },
+        "Batch Prediction",
+    )
 
     return output_file
 
@@ -510,12 +558,14 @@ def batch_prediction_pipeline(model_path: str, data_path: str,
 if __name__ == "__main__":
     # Configuración para desarrollo local
     from . import setup_prefect
+
     setup_prefect()
 
     # Crear datos de ejemplo si no existen
     example_data = "data/sample_data.csv"
     if not os.path.exists(example_data):
         from src.data_utils import generate_sample_data
+
         os.makedirs("data", exist_ok=True)
         df = generate_sample_data(n_samples=1000, n_features=8, random_state=42)
         df.to_csv(example_data, index=False)
