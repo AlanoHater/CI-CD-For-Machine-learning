@@ -1,0 +1,149 @@
+# Pre-commit hooks configuration
+# Ejecutar: pre-commit install
+# Verificar: pre-commit run --all-files
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
+
+repos:
+  # -----------------------------------------------------------------------------------
+  # Python hooks
+  # -----------------------------------------------------------------------------------
+
+  # Ejecutar black para formateo
+  - repo: https://github.com/psf/black
+    rev: 23.11.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  # Ejecutar isort para ordenar imports
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  # Ejecutar flake8 para linting
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        args: ["--max-line-length=88", "--extend-ignore=E203,W503"]
+        exclude: ^(docs/|examples/.*\.py$)
+
+  # Ejecutar mypy para type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.7.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+        args: [--ignore-missing-imports]
+
+  # -----------------------------------------------------------------------------------
+  # YAML and JSON hooks
+  # -----------------------------------------------------------------------------------
+
+  # Validar archivos YAML
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+        exclude: ^\.github/workflows/.*\.yml$  # Los workflows se validan aparte
+
+      - id: check-json
+
+      - id: check-toml
+
+  # -----------------------------------------------------------------------------------
+  # GitHub Actions hooks
+  # -----------------------------------------------------------------------------------
+
+  # Validar workflows de GitHub Actions
+  - repo: https://github.com/pre-commit/actionlint
+    rev: v1.6.25
+    hooks:
+      - id: actionlint
+        args: [-config, .actionlint.yml]
+        files: ^\.github/workflows/
+
+  # -----------------------------------------------------------------------------------
+  # General hooks
+  # -----------------------------------------------------------------------------------
+
+  # Verificar que no hay archivos grandes
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+
+      # Verificar que no hay merge conflict markers
+      - id: check-merge-conflict
+
+      # Verificar que no hay ejecución de archivos
+      - id: check-executables-have-shebangs
+
+      # Verificar que no hay simlinks rotos
+      - id: check-symlinks
+
+      # Verificar que los archivos terminan con newline
+      - id: end-of-file-fixer
+
+      # Verificar que no hay espacios al final de línea
+      - id: trailing-whitespace
+        exclude: ^.*\.(md|yml|yaml)$
+
+      # Verificar sintaxis de Python
+      - id: check-ast
+
+      # Verificar que setup.py no tiene sintaxis de distutils
+      - id: check-setuptools-versions
+
+      # Verificar que no hay imports de __future__
+      - id: check-future-encodings
+
+  # -----------------------------------------------------------------------------------
+  # Security hooks
+  # -----------------------------------------------------------------------------------
+
+  # Escanear secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: ^(docs/|examples/)
+
+  # -----------------------------------------------------------------------------------
+  # Custom hooks (local)
+  # -----------------------------------------------------------------------------------
+
+  # Hook personalizado para validar estructura del proyecto
+  - repo: local
+    hooks:
+      - id: validate-project-structure
+        name: Validate project structure
+        entry: python scripts/validate_structure.py
+        language: system
+        pass_filenames: false
+        files: ^(src/|tests/|examples/)
+
+  # Hook para ejecutar tests rápidos
+  - repo: local
+    hooks:
+      - id: run-quick-tests
+        name: Run quick tests
+        entry: python -m pytest tests/ -x --tb=short --disable-warnings
+        language: system
+        pass_filenames: false
+        files: ^(src/|tests/)

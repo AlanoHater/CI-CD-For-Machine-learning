@@ -1,0 +1,70 @@
+# Actionlint configuration for GitHub Actions workflows
+# https://github.com/rhysd/actionlint/blob/main/docs/config.md
+
+# Configuration for actionlint
+# This file configures the actionlint linter for GitHub Actions workflows
+
+# Global config
+config:
+  # Shellcheck integration
+  shellcheck: true
+
+# Rules configuration
+rules:
+  # Allow missing required inputs if they have defaults
+  action-inputs:
+    allow-missing-required-inputs: true
+
+  # Configure workflow naming
+  workflow-name:
+    # Allow any workflow names
+    pattern: ".*"
+
+  # Configure job naming
+  job-name:
+    # Allow any job names
+    pattern: ".*"
+
+  # Configure step naming
+  step-name:
+    # Allow any step names
+    pattern: ".*"
+
+  # Configure permissions
+  permissions:
+    # Allow workflows without explicit permissions
+    allow-implicit: true
+
+# Custom actions to allow
+action-metadata:
+  # Allow local actions
+  - name: "./.github/actions/*"
+
+# Labels to ignore in workflows
+labels-to-ignore:
+  - "dependencies"
+
+# Allow list for actions
+allowed-actions:
+  # Official GitHub actions
+  - "actions/*"
+  # Popular third-party actions
+  - "codecov/codecov-action"
+  - "docker/*"
+  - "snok/*"
+  - "pre-commit/*"
+  - "azure/*"
+  - "google-github-actions/*"
+  - "aws-actions/*"
+
+# Pyflakes integration (experimental)
+pyflakes: false
+
+# Shellcheck configuration
+shellcheck:
+  # Shellcheck executable
+  exe: "shellcheck"
+  # Shellcheck options
+  options:
+    - "--shell=bash"
+    - "--external-sources"

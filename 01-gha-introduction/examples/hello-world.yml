@@ -1,0 +1,35 @@
+# Ejemplo básico: Hello World Workflow
+# Archivo: .github/workflows/hello-world.yml
+
+name: Hello World CI
+
+# Evento que dispara el workflow
+on: [push]  # Se ejecuta en cualquier push
+
+# Definición de jobs
+jobs:
+  # Job único llamado "hello"
+  hello:
+    # Runner donde se ejecuta
+    runs-on: ubuntu-latest
+
+    # Pasos del job
+    steps:
+      # Paso 1: Mensaje de bienvenida
+      - name: Hello World Message
+        run: echo "¡Hola, GitHub Actions! 👋"
+
+      # Paso 2: Información del sistema
+      - name: System Info
+        run: |
+          echo "Sistema operativo: $(uname -a)"
+          echo "Directorio actual: $(pwd)"
+          echo "Usuario: $(whoami)"
+
+      # Paso 3: Información del contexto de GitHub
+      - name: GitHub Context
+        run: |
+          echo "Repositorio: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Evento: ${{ github.event_name }}"
