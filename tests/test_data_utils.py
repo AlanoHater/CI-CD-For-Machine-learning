@@ -2,7 +2,10 @@
 Tests para el módulo data_utils.py
 Ejemplos de tests unitarios para el aprendizaje de CI/CD
 """
-
+import os # <--- AGREGAR
+import shutil # <--- AGREGAR
+import tempfile # <--- AGREGAR
+import joblib
 import numpy as np
 import pandas as pd
 import pytest
