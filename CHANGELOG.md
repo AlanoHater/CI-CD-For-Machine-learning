@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - N/A
 
 ### Fixed
-- N/A
+- 🐛 Corregir barras invertidas sin escapar en `pyproject.toml` que causaban errores en Black durante CI/CD
 
 ### Security
 - 🔒 Configuración segura de secrets y variables de entorno
