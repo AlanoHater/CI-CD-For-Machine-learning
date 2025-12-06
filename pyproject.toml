@@ -130,9 +130,8 @@ omit = [
     "*/tests/*",
     "*/test_*.py",
     "setup.py",
+    "src/prefect_workflows/*",  # <--- AGREGAR ESTA LÍNEA
 ]
-
-[tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
