@@ -102,13 +102,15 @@ def validate_data_integrity(df: pd.DataFrame) -> Dict[str, Any]:
 
     return validation_results
 
-
+import os
 def save_processed_data(
     X_train: np.ndarray,
     X_test: np.ndarray,
     y_train: np.ndarray,
     y_test: np.ndarray,
     scaler: StandardScaler,
+    # 📝 CAMBIO FORZADO PARA CI
+    os.makedirs(output_path, exist_ok=True)
     output_path: str = "data/processed/",
 ) -> None:
     """
