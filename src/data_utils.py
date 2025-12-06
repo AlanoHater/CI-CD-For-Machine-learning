@@ -104,12 +104,9 @@ def validate_data_integrity(df: pd.DataFrame) -> Dict[str, Any]:
 
 
 def save_processed_data(
-    X_train: np.ndarray,
-    X_test: np.ndarray,
-    y_train: np.ndarray,
-    y_test: np.ndarray,
-    scaler: StandardScaler,
-    output_path: str = "data/processed/",
+    X_train: np.ndarray, X_test: np.ndarray,
+    y_train: np.ndarray, y_test: np.ndarray,
+    scaler: StandardScaler, output_path: str = 'data/processed/'
 ) -> None:
     """
     Guarda datos procesados en archivos.

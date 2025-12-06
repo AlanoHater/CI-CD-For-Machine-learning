@@ -1,7 +1,6 @@
 # Prefect workflows for MLOps
 # Workflow orchestration for Machine Learning pipelines
 
-from prefect import flow, task
 from prefect.blocks.system import Secret
 import os
 

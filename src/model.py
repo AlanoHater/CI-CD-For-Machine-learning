@@ -4,7 +4,7 @@ Ejemplo práctico para testing y CI/CD.
 """
 
 import os
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
 import joblib
 import numpy as np
