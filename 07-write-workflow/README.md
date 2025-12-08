@@ -41,6 +41,3 @@ jobs:
       - run: deploy-to-production
 ```
 
-## ⏳ Estado: Pendiente
-
-Crear ejercicios prácticos para escribir workflows personalizados.
