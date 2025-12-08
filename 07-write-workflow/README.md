@@ -64,9 +64,9 @@ jobs:
     steps:
       - run: echo "Desplegando versión ${{ inputs.model_version }} a ${{ inputs.environment }}..."
       # Aquí irían los steps de deploy reales (ej. AWS, Azure, etc.)
+```
 Caso 3: CI Optimizado (Paths Filter)
 Evitar gastar minutos de cómputo ejecutando el pipeline de ML cuando solo cambia la documentación.
-```
 ```yaml
 
 name: Code-Only CI
