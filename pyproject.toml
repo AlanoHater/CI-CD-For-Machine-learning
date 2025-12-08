@@ -133,8 +133,6 @@ omit = [
     "setup.py",
     "src/prefect_workflows/*", # CAMBIO CLAVE 2: Excluir módulos Prefect sin tests
 ]
-
-[tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
