@@ -180,7 +180,3 @@ services/
 - ✅ Optimizaciones implementadas
 
 ---
-
-## 🏆 Reconocimientos
-
-Completa 3 ejercicios avanzados para obtener el badge **"GitHub Actions Expert"** 🚀🤖
