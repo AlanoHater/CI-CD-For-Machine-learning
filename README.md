@@ -21,16 +21,16 @@ Crear un sistema completo de CI/CD para Machine Learning usando GitHub Actions, 
 | Módulo | Tema | Estado | XP | Contenido |
 |--------|------|--------|----|-----------|
 | **01** | [Get ready to explore GitHub Actions (GHA)](01-gha-introduction/) | ✅ Completo | 50 XP | Introducción completa + ejercicios |
-| **02** | [Intermediate YAML](02-yaml-intermediate/) | 📝 Estructurado | 50 XP | Conceptos básicos listos |
-| **03** | [Find the correct combination](03-gha-components/) | 📝 Estructurado | 50 XP | Conceptos básicos listos |
+| **02** | [Intermediate YAML](02-yaml-intermediate/) | ✅ Completo | 50 XP | Conceptos básicos listos |
+| **03** | [Find the correct combination](03-gha-components/) | ✅ Completo | 50 XP | Conceptos básicos listos |
 | **04** | [Design a Continuous Integration workflow](04-ci-design/) | ✅ Documentado | 100 XP | Guía completa en docs/ |
 | **05** | [Setting a basic CI pipeline](05-basic-ci-pipeline/) | ✅ Implementado | 50 XP | Pipeline funcional creado |
 | **06** | [Interpret GitHub Actions Workflow](06-interpret-workflow/) | ✅ Practicado | 100 XP | Quiz completo disponible |
-| **07** | [Write a GitHub Actions Workflow](07-write-workflow/) | ⏳ Pendiente | 100 XP | Estructura preparada |
-| **08** | [Running repository code](08-running-code/) | ⏳ Pendiente | 50 XP | Estructura preparada |
-| **09** | [Feature branches in shared repository model](09-feature-branches/) | ⏳ Pendiente | 50 XP | Estructura preparada |
-| **10** | [Running Python code in GitHub Actions](10-python-gha/) | ⏳ Pendiente | - | Estructura preparada |
-| **11** | [Environment Variables and Secrets](11-env-vars-secrets/) | ⏳ Pendiente | - | Estructura preparada |
+| **07** | [Write a GitHub Actions Workflow](07-write-workflow/) | ✅ Completo | 100 XP | Estructura preparada |
+| **08** | [Running repository code](08-running-code/) | ✅ Completo | 50 XP | Estructura preparada |
+| **09** | [Feature branches in shared repository model](09-feature-branches/) | ✅ Completo | 50 XP | Estructura preparada |
+| **10** | [Running Python code in GitHub Actions](10-python-gha/) | ✅ Completo | - | Estructura preparada |
+| **11** | [Environment Variables and Secrets](11-env-vars-secrets/) | ✅ Completoe | - | Estructura preparada |
 
 ### 📁 Estructura de Archivos
 
