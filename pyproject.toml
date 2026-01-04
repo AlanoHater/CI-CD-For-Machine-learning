@@ -116,7 +116,8 @@ ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-under=75" # <--- CAMBIAR 80 A 75
+# CAMBIO CLAVE 1: Umbral de cobertura reducido de 80 a 75
+addopts = "-ra -q --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-under=75" 
 testpaths = [
     "tests",
 ]
@@ -130,7 +131,7 @@ omit = [
     "*/tests/*",
     "*/test_*.py",
     "setup.py",
-    "src/prefect_workflows/*",  # <--- AGREGAR ESTA LÍNEA
+    "src/prefect_workflows/*", # CAMBIO CLAVE 2: Excluir módulos Prefect sin tests
 ]
 exclude_lines = [
     "pragma: no cover",
@@ -144,4 +145,4 @@ exclude_lines = [
 
 [tool.bandit]
 exclude_dirs = ["tests", "docs"]
-skips = ["B101", "B601"]  # Skip assert checks and shell usage
+skips = ["B101", "B601"] # Skip assert checks and shell usage

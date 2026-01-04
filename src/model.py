@@ -167,7 +167,7 @@ def create_and_train_model(
     return model
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover <--- AGREGAR AQUÍ
     # Demo del módulo
     print("🚀 Demo del módulo de modelo ML")
 

@@ -1,44 +1,71 @@
-# 📚 Módulo 9: Feature Branches in Shared Repository Model
+### Módulo 9: `09-feature-branches/README.md`
+
+# 📚 Módulo 9: Feature Branches & Git Flow
 
 ## 🎯 Objetivo del Módulo
 
-Entender el flujo de trabajo con ramas feature en repositorios compartidos.
+Implementar estrategias de CI diferenciadas según la rama (Feature vs. Main) para optimizar recursos y velocidad.
 
 ## 📖 Contenido
 
-### 9.1 Git Flow Básico
+### 9.1 Estrategia de Ramas para ML
+- **Feature Branches (`feature/*`)**: Iteración rápida, tests unitarios, linting rápido.
+- **Main Branch (`main`)**: Tests de integración, entrenamiento completo, deploy a staging.
 
-```
-main (stable)
-├── feature/new-model
-├── feature/bug-fix
-└── hotfix/critical-bug
-```
+### 9.2 Casos de Uso Reales (Ejemplos)
 
-### 9.2 CI en Feature Branches
+#### Caso 1: Validación Rápida en Feature Branches
+En ramas de desarrollo, queremos feedback rápido. Solo corremos tests unitarios y linting, saltando el entrenamiento pesado.
 
-#### Ejecutar CI en todas las branches:
 ```yaml
+name: Feature Branch CI
 on:
   push:
-  pull_request:
-    branches: [main, develop]
-```
+    branches: ['feature/**']  # Solo en ramas feature
 
-#### Solo en branches específicas:
+jobs:
+  fast-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install -r requirements.txt
+      
+      # Solo validación estática y tests rápidos
+      - run: ./scripts/run-linting.sh
+      - run: pytest tests/test_data_utils.py  # Tests ligeros solamente
+```
+Caso 2: Pipeline Completo en Main
+Cuando el código llega a producción (main), ejecutamos todo el flujo pesado.
+
 ```yaml
+
+name: Main Branch Release
 on:
   push:
-    branches: [main, 'feature/**']
+    branches: ['main']
+
+jobs:
+  full-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # ... setup python ...
+      
+      # Pipeline completo de ML
+      - name: Run Full ML Demo
+        run: python examples/demo-ml-pipeline.py
+        
+      # Generar reportes de cobertura
+      - run: pytest tests/ --cov=src
 ```
 
-### 9.3 Branch Protection
+Caso 3: Lógica Condicional dentro de un Job
+Usar expresiones if para pasos condicionales en un mismo workflow.
 
-Configurar reglas para proteger `main`:
-- Require PR reviews
-- Require status checks
-- Require up-to-date branches
+```yaml
 
-## ⏳ Estado: Pendiente
-
-Crear guía completa para manejo de feature branches.
+steps:
+  - name: Deploy to Production
+    if: github.ref == 'refs/heads/main'  # Solo si estamos en main
+    run: ./scripts/deploy.sh

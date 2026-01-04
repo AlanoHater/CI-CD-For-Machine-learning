@@ -2,7 +2,10 @@
 Tests para el módulo data_utils.py
 Ejemplos de tests unitarios para el aprendizaje de CI/CD
 """
-
+import os # <--- AGREGAR
+import shutil # <--- AGREGAR
+import tempfile # <--- AGREGAR
+import joblib
 import numpy as np
 import pandas as pd
 import pytest
@@ -185,7 +188,57 @@ class TestDataUtilsIntegration:
         np.testing.assert_array_equal(y_train1, y_train2)
         np.testing.assert_array_equal(y_test1, y_test2)
 
+class TestSaveProcessedData:
+    """Tests para la función save_processed_data."""
 
+    def setup_method(self):
+        """Generar datos de ejemplo y crear directorio temporal."""
+        from src.data_utils import generate_sample_data, preprocess_data
+
+        self.df = generate_sample_data(n_samples=20, n_features=3, random_state=1)
+        self.X_train, self.X_test, self.y_train, self.y_test, self.scaler = preprocess_data(self.df)
+
+        self.temp_dir = tempfile.mkdtemp()
+        self.output_path = self.temp_dir + os.sep 
+
+    def teardown_method(self):
+        """Eliminar el directorio temporal."""
+        shutil.rmtree(self.temp_dir)
+
+    def test_save_processed_data_creates_files(self):
+        """Test que la función guarda todos los archivos esperados."""
+        from src.data_utils import save_processed_data
+
+        save_processed_data(
+            self.X_train, self.X_test, self.y_train, self.y_test, self.scaler, self.output_path
+        )
+
+        expected_files = [
+            "X_train.npy",
+            "X_test.npy",
+            "y_train.npy",
+            "y_test.npy",
+            "scaler.pkl",
+        ]
+
+        for filename in expected_files:
+            file_path = os.path.join(self.output_path, filename)
+            assert os.path.exists(file_path)
+
+    def test_saved_data_can_be_loaded_correctly(self):
+        """Test que los archivos guardados pueden ser cargados y mantienen sus formas."""
+        from src.data_utils import save_processed_data
+        from sklearn.preprocessing import StandardScaler
+
+        save_processed_data(
+            self.X_train, self.X_test, self.y_train, self.y_test, self.scaler, self.output_path
+        )
+
+        X_train_loaded = np.load(os.path.join(self.output_path, "X_train.npy"))
+        scaler_loaded = joblib.load(os.path.join(self.output_path, "scaler.pkl"))
+
+        np.testing.assert_array_equal(self.X_train, X_train_loaded)
+        assert isinstance(scaler_loaded, StandardScaler)
 if __name__ == "__main__":
     # Ejecutar tests si se corre directamente
     pytest.main([__file__, "-v"])

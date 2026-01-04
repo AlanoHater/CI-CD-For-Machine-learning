@@ -70,6 +70,68 @@ steps:
 - Usar secrets para credenciales
 - Variables de entorno para configuración no sensible
 
-## ⏳ Estado: Pendiente
+### 11.4 Casos de Uso Reales 
 
-Crear ejemplos prácticos de manejo seguro de secrets y variables.
+#### Caso 1: Despliegue con Credenciales Seguras
+Inyectar claves de API solo en el momento de uso, manteniéndolas ocultas en los logs (`***`).
+
+```yaml
+name: Secure Deploy
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Cloud
+        env:
+          # Se pasan como variables de entorno, NUNCA como argumentos de línea de comandos
+          API_KEY: ${{ secrets.CLOUD_API_KEY }}
+          REGION: 'us-east-1' # Configuración no sensible
+        run: ./scripts/deploy.sh
+```
+Caso 2: Configuración Dinámica por Entorno
+Usar variables para cambiar el comportamiento del pipeline según la rama (Dev vs Prod).
+
+```yaml
+
+name: Dynamic Config
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Environment
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENV_NAME=production" >> $GITHUB_ENV
+            echo "DB_HOST=prod-db.local" >> $GITHUB_ENV
+          else
+            echo "ENV_NAME=development" >> $GITHUB_ENV
+            echo "DB_HOST=dev-db.local" >> $GITHUB_ENV
+          fi
+          
+      - name: Show Config
+        run: echo "Building for $ENV_NAME connecting to $DB_HOST"
+```
+Caso 3: Validar Existencia de Secretos
+Evitar fallos silenciosos verificando si los secretos necesarios están configurados en el repo.
+
+```yaml
+
+steps:
+  - name: Check Secrets
+    env:
+      HAS_TOKEN: ${{ secrets.HF_TOKEN != '' }}
+    run: |
+      if [ "$HAS_TOKEN" == "false" ]; then
+        echo "❌ Error: El secreto HF_TOKEN no está configurado."
+        exit 1
+      fi
+```
+
